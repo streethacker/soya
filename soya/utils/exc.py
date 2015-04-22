@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
+class UpperServiceError(Exception):
+    code = 1000
+
+
 class APIError(Exception):
     code = 600
 

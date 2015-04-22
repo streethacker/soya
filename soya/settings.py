@@ -5,6 +5,12 @@ DEBUG = True
 
 SECRET_KEY = 'A0Zj98l/3yX HZX~R!jmNLWX/,P?K'
 
+API_KEY = 'BE46f91b984e525e7f65b63bd9d86caf'
+API_URI = 'http://api.map.baidu.com/telematics'
+API_VERSION = 'v3'
+
+OUTPUT_JSON_FORMATTER = True
+
 LOGGING_SETTINGS = {
     'version': 1,
 
