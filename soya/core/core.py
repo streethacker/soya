@@ -58,25 +58,28 @@ class SoyaToolkit(Session, SingletonMixin):
             query_str.lstrip('&')
         )
 
-    def get(self, spec, **kwargs):
-        self.__before_request_hook(spec, **kwargs)
+        return super(SoyaToolkit, self).get
 
-        query_func = super(SoyaToolkit, self).get
+    def __after_request_hook(self, response):
+        if response.status_code != httplib.OK:
+            raise UpperServiceError(
+                u'上层API服务无法访问:{}'.format(response.status_code))
+
+        self._resp_headers = response.headers
+        self._resp_cookies = response.cookies
+
+        try:
+            self._resp_json = response.json()
+        except ValueError as e:
+            logger.exception(e)
+            self._resp_json = {}
+
+    def get(self, spec, **kwargs):
+        query_func = self.__before_request_hook(spec, **kwargs)
 
         try:
             with closing(query_func(self._req_url)) as r:
-                if r.status_code != httplib.OK:
-                    raise UpperServiceError(
-                        u'上层API服务无法访问:{}'.format(r.status_code))
-
-                self._resp_headers = r.headers
-                self._resp_cookies = r.cookies
-
-                try:
-                    self._resp_json = r.json()
-                except ValueError as e:
-                    logger.exception(e)
-                    self._resp_json = {}
+                self.__after_request_hook(r)
         except requests.exceptions.ConnectionError as e:
             logger.exception(e)
             raise UpperServiceError(u'无法连接上层API服务')
