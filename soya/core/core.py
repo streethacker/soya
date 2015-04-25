@@ -50,12 +50,12 @@ class SoyaToolkit(Session, SingletonMixin):
         if self._json_output:
             query_str = query_str + "&" + u"{}={}".format('output', 'json')
 
-        self._req_url = u"{}/{}/{}?ak={}{}".format(
+        self._req_url = u"{}/{}/{}?ak={}&{}".format(
             self._api_uri,
             self._api_version,
             spec,
             self._api_key,
-            query_str
+            query_str.lstrip('&')
         )
 
     def get(self, spec, **kwargs):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import functools
 import inspect
 import re
@@ -8,7 +9,7 @@ import logging
 
 from flask import request
 
-from agera.utils.exc import (
+from soya.utils.exc import (
     APIError,
     MissingParameter,
     ParameterFormatError,
@@ -88,6 +89,35 @@ class BoolField(Field):
 class FloatField(Field):
     __type__ = float
     __description__ = u'小数'
+
+
+class DateTimeFieldBase(Field):
+    __datetime_format__ = None
+
+    def _to_datetime(self, value, _format=None):
+        if self.__datetime_format__ is None:
+            raise NotImplementedError
+        return datetime.datetime.strptime(
+            value,
+            self.__datetime_format__
+        )
+
+    def convert(self, val):
+        try:
+            return self._to_datetime(val)
+        except ValueError:
+            raise ParameterFormatError(
+                u'{}不是有效的{}'.format(val, self.__description__))
+
+
+class DateField(DateTimeFieldBase):
+    __description__ = u'日期'
+    __datetime_format__ = '%Y-%m-%d'
+
+
+class DateTimeField(DateTimeFieldBase):
+    __description__ = u'时间'
+    __datetime_format__ = '%Y-%m-%d %H:%M:%S'
 
 
 class validator(object):
