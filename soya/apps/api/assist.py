@@ -74,6 +74,44 @@ def __reconstruct_traffic_event(start_time, end_time, *events):
             '%Y/%m/%d/%H/%M/%S'
         )
 
+        if start_time is None and end_time is None:
+            result.append({
+                'startTime': from_time.strftime('%Y-%m-%d %H:%M:%S'),
+                'endTime': to_time.strftime('%Y-%m-%d %H:%M:%S'),
+                'title': event['title'],
+                'description': event['description'],
+                'location': event['location'],
+                'type': event_type,
+            })
+
+            continue
+
+        if start_time is None and end_time is not None:
+            if to_time <= end_time:
+                result.append({
+                    'startTime': from_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'endTime': to_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'title': event['title'],
+                    'description': event['description'],
+                    'location': event['location'],
+                    'type': event_type,
+                })
+
+            continue
+
+        if start_time is not None and end_time is None:
+            if from_time >= start_time:
+                result.append({
+                    'startTime': from_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'endTime': to_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'title': event['title'],
+                    'description': event['description'],
+                    'location': event['location'],
+                    'type': event_type,
+                })
+
+            continue
+
         if from_time >= start_time and to_time <= end_time:
             result.append({
                 'startTime': from_time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -96,8 +134,7 @@ def __reconstruct_traffic_event(start_time, end_time, *events):
 })
 def get_weather(location, current_only=True, origin=False):
     kwargs = {'location': location}
-    results = SoyaToolkit().query('weather', **kwargs).\
-        jsonify()['results'][0]
+    results = SoyaToolkit().query('weather', **kwargs).result[0]
 
     if origin:
         return results
@@ -128,9 +165,6 @@ def get_weather(location, current_only=True, origin=False):
 })
 def get_traffic(location, start_time=None, end_time=None):
     kwargs = {'location': location}
-    results = SoyaToolkit().query('trafficEvent', **kwargs).\
-        jsonify()['results']
+    results = SoyaToolkit().query('trafficEvent', **kwargs).result
 
-    results = __reconstruct_traffic_event(start_time, end_time, *results)
-
-    return results
+    return __reconstruct_traffic_event(start_time, end_time, *results)

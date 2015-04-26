@@ -51,10 +51,7 @@ def geocoding(keyword, cityname):
         'cityName': cityname,
     }
 
-    results = SoyaToolkit().query('geocoding', **kwargs).\
-        jsonify()['results']
-
-    return results
+    return SoyaToolkit().query('geocoding', **kwargs).result
 
 
 @bp.route('/geocoding/reverse')
@@ -69,7 +66,6 @@ def reverse_geocoding(longitude, latitude):
         'location': ','.join([str(longitude), str(latitude)]),
     }
 
-    results = SoyaToolkit().query('reverseGeocoding', **kwargs).\
-        jsonify()['results']
+    results = SoyaToolkit().query('reverseGeocoding', **kwargs).result
 
     return __reconstruct_address_info(*results)

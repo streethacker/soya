@@ -62,8 +62,9 @@ class SoyaToolkit(Session, SingletonMixin):
 
     def __after_request_hook(self, response):
         if response.status_code != httplib.OK:
-            raise UpperServiceException(u'错误的状态返回:{}'.
-                                        format(response.status_code))
+            raise UpperServiceException(
+                u'错误的状态返回: {}'.format(response.status_code)
+            )
 
         self._resp_headers = response.headers
         self._resp_cookies = response.cookies
@@ -72,7 +73,30 @@ class SoyaToolkit(Session, SingletonMixin):
             self._resp_json = response.json()
         except ValueError as e:
             logger.exception(e)
-            self._resp_json = {}
+            raise UpperServiceException(
+                u'无效的JSON返回值: {}'.format(e.message)
+            )
+
+        self.__verify_response_json()
+        self.__generate_result()
+
+    def __verify_response_json(self):
+        error = self._resp_json.get('error')
+        message = self._resp_json.get('status') or 'UNKNOWN ERROR'
+
+        if error:
+            raise UpperServiceException(
+                u'无效的JSON返回值: {}'.format(message)
+            )
+
+    def __generate_result(self):
+
+        if self._resp_json.get('result'):
+            self._resp_result = self._resp_json.get('result')
+        elif self._resp_json.get('results'):
+            self._resp_result = self._resp_json.get('results')
+        else:
+            self._resp_result = self._resp_json
 
     def get(self, spec, **kwargs):
         query_func = self.__before_request_hook(spec, **kwargs)
@@ -82,13 +106,19 @@ class SoyaToolkit(Session, SingletonMixin):
                 self.__after_request_hook(r)
         except requests.exceptions.ConnectionError as e:
             logger.exception(e)
-            raise UpperServiceException(u'无法连接到服务:{}'.format(e.message))
+            raise UpperServiceException(
+                u'无法连接到服务: {}'.format(e.message)
+            )
         except requests.exceptions.HTTPError as e:
             logger.exception(e)
-            raise UpperServiceException(u'无效的HTTP响应:{}'.format(e.message))
+            raise UpperServiceException(
+                u'无效的HTTP响应: {}'.format(e.message)
+            )
         except requests.exceptions.Timeout as e:
             logger.exception(e)
-            raise UpperServiceException(u'HTTP请求超时:{}'.format(e.message))
+            raise UpperServiceException(
+                u'HTTP请求超时: {}'.format(e.message)
+            )
 
         return self
 
@@ -103,6 +133,10 @@ class SoyaToolkit(Session, SingletonMixin):
 
     def get_request_url(self):
         return self._req_url
+
+    @property
+    def result(self):
+        return self._resp_result
 
     @classmethod
     def query(clazz, spec, **kwargs):

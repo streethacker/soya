@@ -134,10 +134,14 @@ def __reconstruct_movie_on_cinema_info(rating, *movie_on_cinemas):
 def get_hot_movie(location, is_new=None, is_imax=None, movie_score=None):
     kwargs = {'location': location, 'qt': 'hot_movie'}
 
-    results = SoyaToolkit().query('movie', **kwargs).\
-        jsonify()['result']['movie']
+    results = SoyaToolkit().query('movie', **kwargs).result
 
-    return __reconstruct_movie_info(is_new, is_imax, movie_score, *results)
+    return __reconstruct_movie_info(
+        is_new,
+        is_imax,
+        movie_score,
+        *results.get('movie')
+    )
 
 
 @bp.route('/search/cinema')
@@ -155,8 +159,7 @@ def search_cinema(location, cinema_name, movie_score=None):
         'qt': 'search_cinema',
     }
 
-    results = SoyaToolkit().query('movie', **kwargs).\
-        jsonify()['result']
+    results = SoyaToolkit().query('movie', **kwargs).result
 
     return __reconstruct_cinema_info(movie_score, *results)
 
@@ -178,7 +181,6 @@ def search_movie(location, movie_name, rating=None, page_number=1):
         'qt': 'search_movie',
     }
 
-    results = SoyaToolkit().query('movie', **kwargs).\
-        jsonify()['result']
+    results = SoyaToolkit().query('movie', **kwargs).result
 
     return __reconstruct_movie_on_cinema_info(rating, *results)
