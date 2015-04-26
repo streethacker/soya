@@ -18,7 +18,7 @@ from soya.utils import (
 )
 
 from soya.utils.exc import (
-    UpperServiceError,
+    UpperServiceException,
 )
 
 from soya.settings import (
@@ -62,8 +62,8 @@ class SoyaToolkit(Session, SingletonMixin):
 
     def __after_request_hook(self, response):
         if response.status_code != httplib.OK:
-            raise UpperServiceError(
-                u'上层API服务无法访问:{}'.format(response.status_code))
+            raise UpperServiceException(u'错误的状态返回:{}'.
+                                        format(response.status_code))
 
         self._resp_headers = response.headers
         self._resp_cookies = response.cookies
@@ -82,13 +82,13 @@ class SoyaToolkit(Session, SingletonMixin):
                 self.__after_request_hook(r)
         except requests.exceptions.ConnectionError as e:
             logger.exception(e)
-            raise UpperServiceError(u'无法连接上层API服务')
+            raise UpperServiceException(u'无法连接到服务:{}'.format(e.message))
         except requests.exceptions.HTTPError as e:
             logger.exception(e)
-            raise UpperServiceError(u'无效的HTTP响应')
+            raise UpperServiceException(u'无效的HTTP响应:{}'.format(e.message))
         except requests.exceptions.Timeout as e:
             logger.exception(e)
-            raise UpperServiceError(u'HTTP请求超时')
+            raise UpperServiceException(u'HTTP请求超时:{}'.format(e.message))
 
         return self
 

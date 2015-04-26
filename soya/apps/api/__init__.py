@@ -10,7 +10,7 @@ from flask import (
 
 from soya.utils.exc import (
     APIError,
-    UpperServiceError,
+    UpperServiceException,
 )
 
 
@@ -50,7 +50,7 @@ def api_error_handler(e):
     return make_response(code=e.code, message=e.message)
 
 
-@bp.errorhandler(UpperServiceError)
+@bp.errorhandler(UpperServiceException)
 def upper_service_error_handler(e):
     return make_response(code=1000, message=e.message)
 

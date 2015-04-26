@@ -103,6 +103,26 @@ def __reconstruct_cinema_info(movie_score, *cinemas):
     return result
 
 
+def __reconstruct_movie_on_cinema_info(rating, *movie_on_cinemas):
+
+    result = []
+
+    for movie in movie_on_cinemas:
+        if rating is not None and movie['rating'] < rating:
+            continue
+
+        result.append({
+            'name': movie['name'],
+            'telephone': movie['telephone'],
+            'location': movie['location'],
+            'address': movie['address'],
+            'rating': float(movie['rating']),
+            'time_table': movie['time_table'],
+        })
+
+    return result
+
+
 @bp.route('/movie/hot')
 @render_json
 @validator({
@@ -120,7 +140,7 @@ def get_hot_movie(location, is_new=None, is_imax=None, movie_score=None):
     return __reconstruct_movie_info(is_new, is_imax, movie_score, *results)
 
 
-@bp.route('/movie/search/cinema')
+@bp.route('/search/cinema')
 @render_json
 @validator({
     'location': StringField,
@@ -139,3 +159,26 @@ def search_cinema(location, cinema_name, movie_score=None):
         jsonify()['result']
 
     return __reconstruct_cinema_info(movie_score, *results)
+
+
+@bp.route('/search/movie')
+@render_json
+@validator({
+    'location': StringField,
+    'movie_name': StringField,
+    'rating': FloatField,
+    'page_number': IntField,
+})
+def search_movie(location, movie_name, rating=None, page_number=1):
+
+    kwargs = {
+        'location': location,
+        'wd': movie_name,
+        'pn': page_number,
+        'qt': 'search_movie',
+    }
+
+    results = SoyaToolkit().query('movie', **kwargs).\
+        jsonify()['result']
+
+    return __reconstruct_movie_on_cinema_info(rating, *results)

@@ -1,6 +1,7 @@
 ## Soya 
 
-!['soya'](./icon.jpg)
+<img src="icon.jpg" alt="soya" width="250px" />
+
 
 __Soya__ is a bundle of __Web APIs__, which implemented by [__Flask__](https://github.com/mitsuhiko/flask)
 
