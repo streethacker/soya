@@ -53,3 +53,7 @@ then simply run:
 ```
 $ python server
 ```
+
+## Documentation 
+
+[__Soya API Documentation__](https://github.com/streethacker/soya/blob/develop/doc/documentation.md)

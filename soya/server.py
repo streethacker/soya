@@ -1,20 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flask import (
-    Flask,
-)
-
-from flask.ext.cors import (
-    CORS,
-)
+from flask import Flask
+from flask.ext.cors import CORS
+from soya.apps import api
 
 from soya.settings import (
     DEBUG,
     SECRET_KEY,
-)
-
-from soya.apps import (
-    api,
 )
 
 

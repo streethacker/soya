@@ -5,17 +5,9 @@ import requests
 
 import logging
 
-from requests import (
-    Session,
-)
-
-from contextlib import (
-    closing,
-)
-
-from soya.utils import (
-    SingletonMixin,
-)
+from requests import Session
+from contextlib import closing
+from soya.utils import SingletonMixin
 
 from soya.utils.exc import (
     UpperServiceException,

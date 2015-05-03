@@ -3,9 +3,7 @@
 import datetime
 import logging
 
-from soya.core.core import (
-    SoyaToolkit,
-)
+from soya.core.core import SoyaToolkit
 
 from soya.apps.api import (
     bp,
