@@ -42,6 +42,8 @@ def __reconstruct_movie_info(is_new, is_imax, movie_score, *movies):
                 if int(movie['is_imax']) != val:
                     return False
             if key == 'movie_score':
+                if not movie['movie_score']:
+                    continue
                 if float(movie['movie_score']) < val:
                     return False
 
