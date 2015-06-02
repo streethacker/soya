@@ -1,0 +1,7 @@
+search_movie|92.5403118134
+get_hot_movie|12.3764038086
+get_traffic|10.6178998947
+reverse_geocoding|7.18169212341
+geocoding|7.17990398407
+get_weather|9.64720249176
+search_cinema|66.2318944931
